@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Check if you have `yarn` installed on your system. If not, install it.
+3. Run `yarn` in the root folder from your terminal. This will install all the dependencies.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## VSCode Settings
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Install the following extensions:
+- IntelliCode by Microsoft
+- JavaScript and TypeScript Nightly by Microsoft
+- Path Intellisense by Christian Kohler
+- Prettier by Prettier
+- Tailwind CSS Intellisense by Tailwind Labs
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Optional extensions (good to have):
+- GitLens by GitKraken
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Rules for GitHub
+1. Always create a new branch when working on your task.
+2. The branch must be created from the `dev` branch only (unless it is a hotfix). Therefore, always checkout to `dev` and do a `git pull` before doing a `git checkout -b`.
+3. Branch Naming Rules:
+- `feature/S01-03-task` for a feature development task where "S01-03" is the name of the ticket. 
+- `bugfix/S01-03-bug` for a bug fix task.
+- `hotfix/S01-03-task` for a hot fix. **Note: A hotfix branch is created from main branch and PR is made to both main and dev.**
+4. Create your PR to the `dev` branch only.
+5. Wait for atleast two code reviewers to approve your PR before merging your branch to `dev`.
+6. Delete your branch from remote if you are done working on it.
+7. Contact the technical lead if there are conflicts in your branch.
 
-## Learn More
+## Rules for Components folder
 
-To learn more about Next.js, take a look at the following resources:
+- Create a component as a separate file (named using PascalCase) with a `.tsx` extension.
+- If you have a component that uses dot notation to extend its variants use a folder.
+- Export your component from within the file and also from `index.ts` present in the `components` directory. Make sure exports are sorted.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Rules for Tailwind CSS Class Order
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. unique class (if you created a class for a component like card put it first)
+2. position (if its relative or absolute) at first glance you’ll immediately know if the element doesn't abide by the rules.
+3. size (width, height)
+4. display (flex block hidden)
+5. fonts
+6. colors (text or bg colors)
+7. borders
+8. margins, paddings and gaps
+9. absolute positioning (top, left…z indexes)
