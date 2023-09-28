@@ -1,8 +1,10 @@
 ## Getting Started
 
 1. Clone the repository
-2. Check if you have `yarn` installed on your system. If not, install it.
-3. Run `yarn` in the root folder from your terminal. This will install all the dependencies.
+2. Make sure you have Node >= v16.14 install on your system.
+3. Check if you have `yarn` installed on your system. If not, install it.
+4. Run `yarn` in the root folder from your terminal. This will install all the dependencies.
+5. To start the development server, run `yarn dev`. The server starts on `http://localhost:3000`.
 
 ## VSCode Settings
 
@@ -28,7 +30,7 @@ Optional extensions (good to have):
 6. Delete your branch from remote if you are done working on it.
 7. Contact the technical lead if there are conflicts in your branch.
 
-## Rules for Components folder
+## Rules for Components Folder
 
 - Create a component as a separate file (named using PascalCase) with a `.tsx` extension.
 - If you have a component that uses dot notation to extend its variants use a folder.
