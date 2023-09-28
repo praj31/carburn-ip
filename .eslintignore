@@ -1,0 +1,24 @@
+# Files
+**/*.png
+**/*.svg
+**/*.scss
+**/*.scss.d.ts
+**/*.eot
+**/*.webp
+**/*.ttf
+**/*.otf
+**/*.woff
+**/*.txt
+**/*.html
+**/*.css
+**/*.jpg
+**/*.md
+**/*.json
+
+serviceWorker.ts
+coverage
+
+src/**/*.tsx2
+
+# Folders
+node_modules/
