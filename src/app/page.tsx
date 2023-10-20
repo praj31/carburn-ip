@@ -1,12 +1,9 @@
-import PieChart from "@/components/PieChart";
-import CombineChart from "@/components/CombineChart";
-
-
+import { CombineChart, PieChart } from '@/components'
 export default function Home() {
   return (
-    <main>
+    <div>
       <PieChart />
       <CombineChart />
-    </main>
+    </div>
   )
 }
