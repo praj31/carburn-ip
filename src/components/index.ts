@@ -15,3 +15,9 @@ export interface IDefaultWrapperProps extends IDefaultProps {
 
 // H
 export * from './Head'
+
+// N
+export * from './Navbar'
+
+// S
+export * from './Sidebar'
