@@ -1,7 +1,7 @@
 ## Getting Started
 
 1. Clone the repository
-2. Make sure you have Node >= v16.14 install on your system.
+2. Make sure you have Node >= v16.16 install on your system.
 3. Check if you have `yarn` installed on your system. If not, install it.
 4. Run `yarn` in the root folder from your terminal. This will install all the dependencies.
 5. To start the development server, run `yarn dev`. The server starts on `http://localhost:3000`.
