@@ -1,12 +1,14 @@
 'use client'
 import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import ReactApexChart from "react-apexcharts";
 import Papa from "papaparse";
 import { ApexOptions } from "apexcharts";
 
-interface IGraphProps { }
+interface GraphProps { }
 
-interface ICsvRow {
+interface CsvRow {
     Month: string;
     Actual: number;
     Accrued: number;
@@ -15,12 +17,12 @@ interface ICsvRow {
 }
 
 
-interface IChartState {
-    series: { name: string, type: string, data: number[] }[];
-    options: ApexOptions;
+interface ChartState {
+    series: { name: string, type: string, data: number[] } [];
+    options: any;
 }
 
-export const CombineChart: React.FC<IGraphProps> = () => {
+const CombineChart: React.FC<GraphProps> = () => {
 
     const chartOptions: ApexOptions = {
         // Define your chart options here
@@ -31,13 +33,13 @@ export const CombineChart: React.FC<IGraphProps> = () => {
         },
         series: [],
         title: {
-            text: 'Energy Cost by Month', // Add your desired heading here
-            align: 'center', // You can adjust the alignment as needed
-            margin: 10,
-            style: {
-                fontSize: '20px',
-            }
-        },
+        text: 'Energy Cost by Month', // Add your desired heading here
+        align: 'center', // You can adjust the alignment as needed
+        margin: 10,
+        style: {
+            fontSize: '20px',
+        }
+    },
         dataLabels: {
             enabled: false,
         },
@@ -138,7 +140,7 @@ export const CombineChart: React.FC<IGraphProps> = () => {
             },
         ],
     };
-    const [chartState, setChartState] = useState<IChartState>({
+    const [chartState, setChartState] = useState<ChartState>({
         series: [],
         options: chartOptions,
     });
@@ -147,8 +149,8 @@ export const CombineChart: React.FC<IGraphProps> = () => {
         fetch('./Energy.csv')
             .then((response) => response.text())
             .then((csv) => {
-                const parsedData = Papa.parse<ICsvRow>(csv, { header: true });
-                const month = parsedData.data.map((item) => item.Month)
+                const parsedData = Papa.parse<CsvRow>(csv, { header: true });
+                const month = parsedData.data.map((item)=>item.Month)
                 setChartState((prevState) => ({
                     ...prevState,
                     series: [
@@ -185,17 +187,18 @@ export const CombineChart: React.FC<IGraphProps> = () => {
                 console.error('Error fetching or parsing CSV data:', error);
             });
     }, []);
-
+   
     return (
         <div>
             <ReactApexChart
-                height={350}
                 options={chartState.options}
                 series={chartState.series}
-                type="line"
-                width="100%"
+                type="bar"
+                height={350}
+                width={"100%"}
             />
         </div>
     );
 };
 
+export default CombineChart;

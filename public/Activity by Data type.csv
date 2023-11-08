@@ -1,0 +1,14 @@
+Measures,CO2e  (t),CO2e  (t)-12 Mth Avg,Proportion (%),Variance (%),Start Period,End Period
+Electricity [kWh],76979.2961,79632.8689,67.57,-3.33,21-Oct,22-Sep
+Natural Gas [cf],14099.5069,13262.6927,12.37,6.3,21-Oct,22-Sep
+Natural Gas [therms],9618.1609,9431.0403,8.44,1.98,21-Oct,22-Sep
+Refrigerant HFC-143a [kg],5947,5415.6333,5.22,9.81,21-Oct,22-Sep
+Refrigerant R22 [kg],4937.2382,4811.5566,4.33,2.61,21-Oct,22-Sep
+Steam [therms],1182.5376,1202.7498,1.03,-1.68,21-Oct,22-Sep
+Natural Gas [GJ],635.3697,668.7316,0.55,-4.98,21-Oct,22-Sep
+Steam [MMBtu],485.1956,476.1567,0.42,1.89,21-Oct,22-Sep
+Diesel Transport [gal],294.8408,308.0921,0.25,-4.3,21-Oct,22-Sep
+Business flights [miles],68.0894,73.042,0.05,-6.78,21-Oct,22-Sep
+Diesel Stationary [L],28.5328,27.1388,0.02,5.13,21-Oct,22-Sep
+Paper [kg],4.2337,4.2421,0,-0.19,21-Oct,22-Sep
+Electricity - Green [kWh],-356.801,-356.9899,-0.31,-0.05,21-Oct,22-Sep
