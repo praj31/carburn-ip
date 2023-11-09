@@ -13,6 +13,7 @@
     "apexcharts": "^3.44.0",
     "axios": "^1.6.1",
     "classnames": "^2.3.2",
+    "gridstack": "^9.5.0",
     "next": "latest",
     "papaparse": "^5.4.1",
     "react": "latest",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/gridstack": "^0.5.2",
     "@types/next": "^9.0.0",
     "@types/node": "latest",
     "@types/papaparse": "^5.3.9",
