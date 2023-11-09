@@ -1,11 +1,21 @@
 'use client'
 import cx from 'classnames'
+import Link from 'next/link'
 
 interface IProps {
   open: boolean
 }
 
-const links = ['Dashboard', 'UI Elements', 'Report Generator', 'Database']
+const links = [
+  {
+    label: 'Dashboard',
+    url: '/dashboard',
+  },
+  {
+    label: 'Database',
+    url: '/database',
+  },
+]
 
 export const Sidebar = ({ open }: IProps) => {
   return (
@@ -16,11 +26,13 @@ export const Sidebar = ({ open }: IProps) => {
       )}>
       <ul className="p-4">
         {links.map((link, idx) => (
-          <li
-            key={idx}
-            className="rounded-full mb-4 font-normal hover:cursor-pointer hover:font-semibold">
-            {link}
-          </li>
+          <Link href={link.url}>
+            <li
+              key={idx}
+              className="rounded-full mb-4 font-normal hover:cursor-pointer hover:font-semibold">
+              {link.label}
+            </li>
+          </Link>
         ))}
       </ul>
     </div>

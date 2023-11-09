@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navbar, Sidebar } from '@/components'
 import cx from 'classnames'
 import './globals.css'
+import useFileStore from '@/app/_store/fileStore'
 
 interface IProps {
   children: React.ReactNode
@@ -10,6 +11,11 @@ interface IProps {
 
 export default function RootLayout({ children }: IProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { fetchFiles } = useFileStore()
+
+  useEffect(() => {
+    fetchFiles()
+  }, [])
 
   return (
     <html lang="en">
