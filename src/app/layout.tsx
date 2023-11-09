@@ -1,14 +1,8 @@
 'use client'
-import type { Metadata } from 'next'
 import { useState } from 'react'
 import { Navbar, Sidebar } from '@/components'
 import cx from 'classnames'
 import './globals.css'
-
-export const metadata: Metadata = {
-  title: 'Page Title',
-  description: 'Page Description',
-}
 
 interface IProps {
   children: React.ReactNode
