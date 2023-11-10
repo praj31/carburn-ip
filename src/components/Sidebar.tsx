@@ -26,10 +26,8 @@ export const Sidebar = ({ open }: IProps) => {
       )}>
       <ul className="p-4">
         {links.map((link, idx) => (
-          <Link href={link.url}>
-            <li
-              key={idx}
-              className="rounded-full mb-4 font-normal hover:cursor-pointer hover:font-semibold">
+          <Link key={idx} href={link.url}>
+            <li className="rounded-full mb-4 font-normal hover:cursor-pointer hover:font-semibold">
               {link.label}
             </li>
           </Link>

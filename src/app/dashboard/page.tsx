@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, createRef, useLayoutEffect, useState } from 'react'
+import React, { useRef, createRef, useLayoutEffect, useState, useEffect } from 'react'
 import 'gridstack/dist/gridstack.css'
 import 'gridstack/dist/gridstack-extra.css'
 import 'gridstack/dist/gridstack-all'
@@ -9,6 +9,7 @@ import useFileStore from '@/app/_store/fileStore'
 import axios from 'axios'
 import Papa from 'papaparse'
 import ApexChart from 'react-apexcharts'
+import { ApexOptions } from 'apexcharts'
 
 interface ItemProps {
   id: string
@@ -19,12 +20,30 @@ interface ItemProps {
   onDelete?: () => void
 }
 
-const Item: React.FC<ItemProps> = ({ id, onDelete }) => {
+type ChartDataType = {
+  options: ApexOptions
+  series: any
+}
+
+let pieChartData: ChartDataType, barChartData: ChartDataType
+
+// type SelectType = {
+//   label: string
+//   value: string
+// }
+
+const Item: React.FC<ItemProps> = ({ onDelete }) => {
   const { files } = useFileStore()
+  // const files: SelectType[] = datafiles.map((label) => ({ value: label, label }))
+  // const [dataSource, setDataSource] = useState<SelectType>({
+  // label: '',
+  // value: '',
+  // })
   const [csvData, setCsvData] = useState([])
   const [chartType, setChartType] = useState('')
   const [xField, setXField] = useState('')
   const [yField, setYField] = useState('')
+  const [yFields, setYFields] = useState<any[]>([])
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCsvData([])
@@ -38,31 +57,56 @@ const Item: React.FC<ItemProps> = ({ id, onDelete }) => {
     })
   }
 
-  // const handlePieChartFieldChange = (selectedField: string) => {
-  //   setSelectedPieChartFields((prevSelectedFields) => {
-  //     // Add or remove the selected field based on the current state
-  //     if (prevSelectedFields.includes(selectedField)) {
-  //       return prevSelectedFields.filter((field) => field !== selectedField)
-  //     } else {
-  //       return [...prevSelectedFields, selectedField]
-  //     }
-  //   })
-  // }
+  const handleMultipleFields = (selectedField: string) => {
+    setYFields((prevSelectedFields) => {
+      // Add or remove the selected field based on the current state
+      if (prevSelectedFields.includes(selectedField)) {
+        return yFields.filter((field: any) => field !== selectedField)
+      } else {
+        return [...yFields, selectedField]
+      }
+    })
+    console.log(barChartData)
+  }
 
-  const pieChartData = {
-    // ApexCharts options (customize as needed)
-    // Add other options as needed
-    options: {
-      labels: csvData.map((row) => row[xField]),
-      legend: {
-        show: true,
+  if (chartType === 'pie') {
+    pieChartData = {
+      options: {
+        labels: csvData.map((row) => row[xField]),
+        legend: {
+          show: true,
+        },
       },
-    },
-    series: csvData.map((row) => row[yField]),
+      series: csvData.map((row) => row[yField]),
+    }
+  }
+
+  if (chartType === 'bar' || chartType === 'line') {
+    barChartData = {
+      options: {
+        xaxis: {
+          categories: csvData.map((row) => row[xField]),
+        },
+        stroke: {
+          curve: 'smooth',
+        },
+        markers: {
+          shape: 'circle',
+          size: 1,
+        },
+      },
+      series: yFields.map((field, idx) => {
+        return {
+          name: field,
+          type: chartType === 'bar' ? 'column' : 'line',
+          data: csvData.map((row) => row[field]),
+        }
+      }),
+    }
   }
 
   return (
-    <div className="w-full h-max p-2">
+    <div className="w-full h-auto p-2 flex-1">
       <div className="flex flex-wrap mb-4">
         <select onChange={handleFileSelect}>
           <option selected disabled>
@@ -74,6 +118,13 @@ const Item: React.FC<ItemProps> = ({ id, onDelete }) => {
             </option>
           ))}
         </select>
+        {/* <Select
+          placeholder="Select data source"
+          value={dataSource}
+          onChange={(selected) => setDataSource(selected!)}
+          options={files}
+          styles={reactSelectCustomStyle}
+        /> */}
 
         {csvData.length > 0 && (
           <select onChange={(e) => setChartType(e.target.value)}>
@@ -82,10 +133,11 @@ const Item: React.FC<ItemProps> = ({ id, onDelete }) => {
             </option>
             <option value="pie">Pie Chart</option>
             <option value="bar">Bar Chart</option>
+            <option value="line">Line Chart</option>
           </select>
         )}
 
-        {chartType && chartType === 'pie' && (
+        {chartType && (
           <div className="flex">
             <select onChange={(e) => setXField(e.target.value)}>
               <option selected disabled>
@@ -97,16 +149,30 @@ const Item: React.FC<ItemProps> = ({ id, onDelete }) => {
                 </option>
               ))}
             </select>
-            <select onChange={(e) => setYField(e.target.value)}>
-              <option selected disabled>
-                Select Values
-              </option>
-              {Object.keys(csvData[0]).map((field) => (
-                <option key={field} value={field}>
-                  {field}
+            {chartType === 'pie' && (
+              <select onChange={(e) => setYField(e.target.value)}>
+                <option selected disabled>
+                  Select Values
                 </option>
-              ))}
-            </select>
+                {Object.keys(csvData[0]).map((field) => (
+                  <option key={field} value={field}>
+                    {field}
+                  </option>
+                ))}
+              </select>
+            )}
+            {(chartType === 'bar' || chartType === 'line') && (
+              <select multiple onChange={(e) => handleMultipleFields(e.target.value)}>
+                <option selected disabled>
+                  Select Values
+                </option>
+                {Object.keys(csvData[0]).map((field) => (
+                  <option key={field} value={field}>
+                    {field}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         )}
 
@@ -115,16 +181,25 @@ const Item: React.FC<ItemProps> = ({ id, onDelete }) => {
         </button>
       </div>
       <div className="w-full h-full flex justify-center items-center">
-        {chartType === 'pie' && xField && yField && (
+        {chartType && chartType === 'pie' && xField && yField && (
           <ApexChart
             options={pieChartData.options}
             series={pieChartData.series}
             type={chartType}
             width={500}
-            height={400}
+            height={360}
           />
         )}
-        {chartType === 'bar' && <p>Bar Chart</p>}
+
+        {chartType && (chartType === 'bar' || chartType === 'line') && xField && yFields && (
+          <ApexChart
+            options={barChartData.options}
+            series={barChartData.series}
+            type="line"
+            width={1024}
+            height={360}
+          />
+        )}
       </div>
     </div>
   )
@@ -271,4 +346,14 @@ const ControlledStack: React.FC<ControlledStackProps> = ({ items, addItem, chang
       </div>
     </div>
   )
+}
+
+export const reactSelectCustomStyle = {
+  option: (provided: any, state: { isSelected: any }) => ({
+    ...provided,
+    color: state.isSelected ? 'white' : '',
+    border: '2px solid white',
+    borderRadius: '0.5rem',
+    fontSize: '0.875rem',
+  }),
 }
