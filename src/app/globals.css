@@ -7,8 +7,5 @@
   padding: 0;
   box-sizing: border-box;
   scroll-behavior: smooth;
-}
-
-.grid-stack-item {
-  background-color: #f1f1f1;
+  outline: none;
 }

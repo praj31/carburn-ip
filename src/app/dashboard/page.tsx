@@ -3,8 +3,12 @@
 import React, { useRef, createRef, useLayoutEffect, useState } from 'react'
 import 'gridstack/dist/gridstack.css'
 import 'gridstack/dist/gridstack-extra.css'
+import 'gridstack/dist/gridstack-all'
 import { GridStack, GridStackOptions, GridStackWidget } from 'gridstack'
-// import 'gridstack/dist/gridstack-all'
+import useFileStore from '@/app/_store/fileStore'
+import axios from 'axios'
+import Papa from 'papaparse'
+import ApexChart from 'react-apexcharts'
 
 interface ItemProps {
   id: string
@@ -15,14 +19,116 @@ interface ItemProps {
   onDelete?: () => void
 }
 
-const Item: React.FC<ItemProps> = ({ id, onDelete }) => (
-  <div>
-    <p>{id}</p>
-    <button className="bg-red-500 p-2" onClick={onDelete}>
-      Delete
-    </button>
-  </div>
-)
+const Item: React.FC<ItemProps> = ({ id, onDelete }) => {
+  const { files } = useFileStore()
+  const [csvData, setCsvData] = useState([])
+  const [chartType, setChartType] = useState('')
+  const [xField, setXField] = useState('')
+  const [yField, setYField] = useState('')
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCsvData([])
+    const response = await axios.get(`http://localhost:4000/files/${e.target.value}`)
+    Papa.parse(response.data, {
+      header: true,
+      dynamicTyping: true,
+      complete: (result: any) => {
+        setCsvData(result.data)
+      },
+    })
+  }
+
+  // const handlePieChartFieldChange = (selectedField: string) => {
+  //   setSelectedPieChartFields((prevSelectedFields) => {
+  //     // Add or remove the selected field based on the current state
+  //     if (prevSelectedFields.includes(selectedField)) {
+  //       return prevSelectedFields.filter((field) => field !== selectedField)
+  //     } else {
+  //       return [...prevSelectedFields, selectedField]
+  //     }
+  //   })
+  // }
+
+  const pieChartData = {
+    // ApexCharts options (customize as needed)
+    // Add other options as needed
+    options: {
+      labels: csvData.map((row) => row[xField]),
+      legend: {
+        show: true,
+      },
+    },
+    series: csvData.map((row) => row[yField]),
+  }
+
+  return (
+    <div className="w-full h-max p-2">
+      <div className="flex flex-wrap mb-4">
+        <select onChange={handleFileSelect}>
+          <option selected disabled>
+            Select data source
+          </option>
+          {files.map((filename, idx) => (
+            <option key={idx} value={filename}>
+              {filename}
+            </option>
+          ))}
+        </select>
+
+        {csvData.length > 0 && (
+          <select onChange={(e) => setChartType(e.target.value)}>
+            <option selected disabled>
+              Select chart type
+            </option>
+            <option value="pie">Pie Chart</option>
+            <option value="bar">Bar Chart</option>
+          </select>
+        )}
+
+        {chartType && chartType === 'pie' && (
+          <div className="flex">
+            <select onChange={(e) => setXField(e.target.value)}>
+              <option selected disabled>
+                Select Labels
+              </option>
+              {Object.keys(csvData[0]).map((field) => (
+                <option key={field} value={field}>
+                  {field}
+                </option>
+              ))}
+            </select>
+            <select onChange={(e) => setYField(e.target.value)}>
+              <option selected disabled>
+                Select Values
+              </option>
+              {Object.keys(csvData[0]).map((field) => (
+                <option key={field} value={field}>
+                  {field}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <button className="text-white bg-red-600 p-2 rounded-lg" onClick={onDelete}>
+          Delete
+        </button>
+      </div>
+      <div className="w-full h-full flex justify-center items-center">
+        {chartType === 'pie' && xField && yField && (
+          <ApexChart
+            options={pieChartData.options}
+            series={pieChartData.series}
+            type={chartType}
+            width={500}
+            height={400}
+          />
+        )}
+        {chartType === 'bar' && <p>Bar Chart</p>}
+      </div>
+    </div>
+  )
+}
 
 interface ControlledStackProps {
   items: Array<ItemProps>
@@ -32,22 +138,10 @@ interface ControlledStackProps {
 
 export default function Dashboard() {
   const [items1, setItems1] = useState<ItemProps[]>([])
-  // const maxX1 = useRef(Math.max(...items1.map((item) => item.x + (item.w ?? 0))))
-  // const maxY1 = useRef(Math.max(...items1.map((item) => item.y + (item.h ?? 0))))
 
   const addItemToGrid1 = () => {
     setItems1((prevItems) => {
-      const newId = `item-${items1.length + 1}`
-
-      // // Find the last item in the previous column (if any)
-      // const lastItemInColumn = prevItems
-      //   .filter((item) => item.x + (item.w ?? 0) === maxX1.current)
-      //   .reduce((prev, current) => (prev.y > current.y ? prev : current), { y: -1 }) as ItemProps
-
-      // const newX =
-      //   lastItemInColumn.x === -1 ? maxX1.current : lastItemInColumn.x + (lastItemInColumn.w ?? 0)
-      // const newY = lastItemInColumn.y === -1 ? maxY1.current : lastItemInColumn.y
-
+      const newId = `block-${items1.length + 1}`
       const newItem: ItemProps = {
         id: newId,
         x: 0,
@@ -55,11 +149,6 @@ export default function Dashboard() {
         w: 6,
         h: 2,
       }
-
-      // Update the maximum x and y values for the next item
-      // maxX1.current = Math.max(maxX1.current + 1, newX + 1)
-      // maxY1.current = Math.max(maxY1.current, newY + 1)
-
       return [...prevItems, newItem]
     })
   }
@@ -180,9 +269,6 @@ const ControlledStack: React.FC<ControlledStackProps> = ({ items, addItem, chang
           </div>
         ))}
       </div>
-      <code>
-        <pre>{JSON.stringify(items, null, 2)}</pre>
-      </code>
     </div>
   )
 }
