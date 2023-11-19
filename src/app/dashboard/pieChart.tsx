@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import Papa from 'papaparse';
+import Papa, { ParseResult } from 'papaparse';
 
-const PieChart: React.FC = () => {
+interface PieChartData {
+  [key: string]: string | number;
+}
+
+interface PieChartProps {
+  data: PieChartData[];
+}
+
+const PieChart: React.FC<PieChartProps> = ({ data }) => {
   const [chartData, setChartData] = useState<{
     series: number[];
     options: {
@@ -15,39 +23,95 @@ const PieChart: React.FC = () => {
     },
   });
 
+  const [selectedValueField, setSelectedValueField] = useState<string>('');
+  const [selectedLabelField, setSelectedLabelField] = useState<string>('');
+
   useEffect(() => {
-    // Load data from the CSV file
-    Papa.parse('./Activity_by_location.csv', {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        const data: any[] = results.data; // Explicitly set data type to any
-
-        // Extract data for the Pie Chart
-        const series = data.map((item: any) => item['CO2e_(t)']); // Explicitly set item type to any
-        const labels = data.map((item: any) => item['Locations']); // Explicitly set item type to any
-
-        setChartData({
-          series,
-          options: {
-            labels,
-          },
-        });
+    setChartData({
+      series: [],
+      options: {
+        labels: [],
       },
     });
-  }, []);
+  }, [data]);
+
+  const updateChart = () => {
+    const valueFieldData = data.map((item) => item[selectedValueField]);
+    const labelFieldData = data.map((item) => item[selectedLabelField]);
+
+    setChartData({
+      series: valueFieldData,
+      options: {
+        labels: labelFieldData.map(String),
+      },
+    });
+  };
+
+  const getAllFields = () => {
+    const allFields: string[] = [];
+    data.forEach((item) => {
+      Object.keys(item).forEach((field) => {
+        if (!allFields.includes(field)) {
+          allFields.push(field);
+        }
+      });
+    });
+    return allFields;
+  };
+
+  const availableFields = getAllFields();
 
   return (
     <div className="card">
       <div className="card-body">
-        <h5 className="card-title">Emissions by locations</h5>
-        <ReactApexChart
-          options={chartData.options}
-          series={chartData.series}
-          type="pie"
-          height={363}
-        />
+        <h5 className="card-title">Pie Chart</h5>
+
+        <div className="row">
+          <div className="col-md-6">
+            <div className="form-group">
+              <label htmlFor="selectValueField">Select Value Field:</label>
+              <select
+                id="selectValueField"
+                className="form-control"
+                onChange={(e) => setSelectedValueField(e.target.value)}
+              >
+                <option value="">Select Value Field</option>
+                {availableFields.map((field) => (
+                  <option key={field} value={field}>
+                    {field}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="form-group">
+              <label htmlFor="selectLabelField">Select Label Field:</label>
+              <select
+                id="selectLabelField"
+                className="form-control"
+                onChange={(e) => setSelectedLabelField(e.target.value)}
+              >
+                <option value="">Select Label Field</option>
+                {availableFields.map((field) => (
+                  <option key={field} value={field}>
+                    {field}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button
+          className="btn btn-primary mt-3"
+          onClick={updateChart}
+          disabled={!selectedValueField || !selectedLabelField}
+        >
+          Update Chart
+        </button>
+
+        <ReactApexChart options={chartData.options} series={chartData.series} type="pie" height={363} />
       </div>
     </div>
   );
