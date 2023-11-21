@@ -1,23 +1,24 @@
 'use client'
 import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import ReactApexChart from "react-apexcharts";
 import Papa from "papaparse";
 import { ApexOptions } from "apexcharts";
 
-interface IGraphProps { }
+interface GraphProps { }
 
-interface ICsvData {
+interface CsvData {
   Locations: string;
   'CO2e_(t)': string;
 }
 
-interface IChartState {
-  options: ApexOptions;
-  series: number[];
-
+interface ChartState {
+  series: number[]; 
+  options: any; 
 }
 
-export const PieChart: React.FC<IGraphProps> = () => {
+const PieChart: React.FC<GraphProps> = () => {
 
   const chartOptions: ApexOptions = {
     // Define your chart options here
@@ -45,7 +46,7 @@ export const PieChart: React.FC<IGraphProps> = () => {
       '#607D8B',
       '#F44336',]
   };
-  const [pieState, setPieState] = useState<IChartState>({
+  const [pieState, setPieState] = useState<ChartState>({
     series: [],
     options: chartOptions,
   });
@@ -54,7 +55,7 @@ export const PieChart: React.FC<IGraphProps> = () => {
     fetch('./Activity_by_location.csv')
       .then((response) => response.text())
       .then((csv) => {
-        const parsedData = Papa.parse<ICsvData>(csv, { header: true });
+        const parsedData = Papa.parse<CsvData>(csv, { header: true });
         const locations = parsedData.data.map((item) => item.Locations);
         const co2eData = parsedData.data.map((item) => parseFloat(item['CO2e_(t)']));
         setPieState((prevState) => ({
@@ -74,12 +75,13 @@ export const PieChart: React.FC<IGraphProps> = () => {
   return (
     <div>
       <ReactApexChart
-        height={350}
         options={pieState.options}
         series={pieState.series}
         type="pie"
+        height={350}
       />
     </div>
   );
 };
 
+export default PieChart;
