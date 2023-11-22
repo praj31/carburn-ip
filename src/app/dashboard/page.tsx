@@ -10,6 +10,7 @@ import axios from 'axios'
 import Papa from 'papaparse'
 import ApexChart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts'
+import Modal from 'react-modal';
 
 interface ItemProps {
   id: string
@@ -18,6 +19,8 @@ interface ItemProps {
   w?: number
   h?: number
   onDelete?: () => void
+  onRequestClose?: () => void;
+  isOpen?: boolean;
 }
 
 type ChartDataType = {
@@ -27,47 +30,44 @@ type ChartDataType = {
 
 let pieChartData: ChartDataType, barChartData: ChartDataType
 
-// type SelectType = {
-//   label: string
-//   value: string
-// }
+const Item: React.FC<ItemProps> = ({ onDelete, onRequestClose, isOpen }) => {
+  const { files } = useFileStore();
+  const [csvData, setCsvData] = useState<any[]>([]);
+  const [chartType, setChartType] = useState('');
+  const [xField, setXField] = useState('');
+  const [yField, setYField] = useState('');
+  const [yFields, setYFields] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-const Item: React.FC<ItemProps> = ({ onDelete }) => {
-  const { files } = useFileStore()
-  // const files: SelectType[] = datafiles.map((label) => ({ value: label, label }))
-  // const [dataSource, setDataSource] = useState<SelectType>({
-  // label: '',
-  // value: '',
-  // })
-  const [csvData, setCsvData] = useState([])
-  const [chartType, setChartType] = useState('')
-  const [xField, setXField] = useState('')
-  const [yField, setYField] = useState('')
-  const [yFields, setYFields] = useState<any[]>([])
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCsvData([])
-    const response = await axios.get(`http://localhost:4000/files/${e.target.value}`)
+    setCsvData([]);
+    const response = await axios.get(`http://localhost:4000/files/${e.target.value}`);
     Papa.parse(response.data, {
       header: true,
       dynamicTyping: true,
       complete: (result: any) => {
-        setCsvData(result.data)
+        setCsvData(result.data);
       },
-    })
-  }
+    });
+  };
 
   const handleMultipleFields = (selectedField: string) => {
     setYFields((prevSelectedFields) => {
-      // Add or remove the selected field based on the current state
       if (prevSelectedFields.includes(selectedField)) {
-        return yFields.filter((field: any) => field !== selectedField)
+        return yFields.filter((field) => field !== selectedField);
       } else {
-        return [...yFields, selectedField]
+        return [...yFields, selectedField];
       }
-    })
-    console.log(barChartData)
-  }
+    });
+  };
 
   if (chartType === 'pie') {
     pieChartData = {
@@ -76,9 +76,21 @@ const Item: React.FC<ItemProps> = ({ onDelete }) => {
         legend: {
           show: true,
         },
+        colors: [ '#0033cc',
+                  '#4d79ff',
+                  '#b3c6ff',
+                  '#999999',
+                  '#33cc33',
+                  '#85e085',
+                  '#d6f5d6',
+                  '#cccccc',
+                  '#8c1aff',
+                  '#b366ff',
+                  '#e6ccff',
+                  '#f2f2f2',],
       },
       series: csvData.map((row) => row[yField]),
-    }
+    };
   }
 
   if (chartType === 'bar' || chartType === 'line') {
@@ -94,87 +106,117 @@ const Item: React.FC<ItemProps> = ({ onDelete }) => {
           shape: 'circle',
           size: 1,
         },
+        colors: [ '#0033cc',
+                  '#33cc33',
+                  '#8c1aff',
+                  
+                  
+
+                  '#999999',
+
+                  
+                  '#85e085',
+                  '#4d79ff',
+                  '#d6f5d6',
+
+                  '#cccccc',
+                  
+                  
+                  '#b366ff',
+                  
+                  '#b3c6ff',
+                  '#e6ccff',
+
+                  '#f2f2f2',],
       },
       series: yFields.map((field, idx) => {
         return {
           name: field,
           type: chartType === 'bar' ? 'column' : 'line',
           data: csvData.map((row) => row[field]),
-        }
+        };
       }),
-    }
+    };
   }
 
   return (
     <div className="w-full h-auto p-2 flex-1">
       <div className="flex flex-wrap mb-4">
-        <select onChange={handleFileSelect}>
-          <option selected disabled>
-            Select data source
-          </option>
-          {files.map((filename, idx) => (
-            <option key={idx} value={filename}>
-              {filename}
-            </option>
-          ))}
-        </select>
-        {/* <Select
-          placeholder="Select data source"
-          value={dataSource}
-          onChange={(selected) => setDataSource(selected!)}
-          options={files}
-          styles={reactSelectCustomStyle}
-        /> */}
+      {/* <button onClick={openModal}>Edit</button> */}
+      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={openModal}>Edit</button>
 
-        {csvData.length > 0 && (
-          <select onChange={(e) => setChartType(e.target.value)}>
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={onRequestClose}
+          contentLabel="Simple Modal"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md p-8 max-w-md w-full"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50">
+
+          <select onChange={handleFileSelect}>
             <option selected disabled>
-              Select chart type
+              Select data source
             </option>
-            <option value="pie">Pie Chart</option>
-            <option value="bar">Bar Chart</option>
-            <option value="line">Line Chart</option>
-          </select>
-        )}
-
-        {chartType && (
-          <div className="flex">
-            <select onChange={(e) => setXField(e.target.value)}>
-              <option selected disabled>
-                Select Labels
+            {files.map((filename, idx) => (
+              <option key={idx} value={filename}>
+                {filename}
               </option>
-              {Object.keys(csvData[0]).map((field) => (
-                <option key={field} value={field}>
-                  {field}
-                </option>
-              ))}
+            ))}
+          </select>
+
+          {csvData.length > 0 && (
+            <select onChange={(e) => setChartType(e.target.value)}>
+              <option selected disabled>
+                Select chart type
+              </option>
+              <option value="pie">Pie Chart</option>
+              <option value="bar">Bar Chart</option>
+              <option value="line">Line Chart</option>
             </select>
-            {chartType === 'pie' && (
-              <select onChange={(e) => setYField(e.target.value)}>
+          )}
+
+          {chartType && (
+            <div className="flex">
+              <select onChange={(e) => setXField(e.target.value)}>
                 <option selected disabled>
-                  Select Values
+                  Select Labels
                 </option>
                 {Object.keys(csvData[0]).map((field) => (
-                  <option key={field} value={field}>
-                    {field}
-                  </option>
+                  <option key={field} value={field}>{field}</option>
                 ))}
               </select>
-            )}
-            {(chartType === 'bar' || chartType === 'line') && (
-              <select multiple onChange={(e) => handleMultipleFields(e.target.value)}>
-                <option selected disabled>
-                  Select Values
-                </option>
-                {Object.keys(csvData[0]).map((field) => (
-                  <option key={field} value={field}>
-                    {field}
+              {chartType === 'pie' && (
+                <select onChange={(e) => setYField(e.target.value)}>
+                  <option selected disabled>
+                    Select Values
                   </option>
-                ))}
-              </select>
-            )}
-          </div>
-        )}
+                  {Object.keys(csvData[0]).map((field) => (
+                    <option key={field} value={field}>
+                      {field}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {(chartType === 'bar' || chartType === 'line') && (
+                <select multiple onChange={(e) => handleMultipleFields(e.target.value)}>
+                  <option selected disabled>
+                    Select Values
+                  </option>
+                  {Object.keys(csvData[0]).map((field) => (
+                    <option key={field} value={field}>
+                      {field}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
+                
+          <button
+            onClick={closeModal}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+              Close
+          </button>
+        </Modal>
 
         <button className="text-white bg-red-600 p-2 rounded-lg" onClick={onDelete}>
           Delete
@@ -202,8 +244,7 @@ const Item: React.FC<ItemProps> = ({ onDelete }) => {
         )}
       </div>
     </div>
-  )
-}
+  )}
 
 interface ControlledStackProps {
   items: Array<ItemProps>
@@ -222,7 +263,7 @@ export default function Dashboard() {
         x: 0,
         y: 0,
         w: 6,
-        h: 2,
+        h: 2
       }
       return [...prevItems, newItem]
     })
