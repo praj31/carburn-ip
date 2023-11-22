@@ -15,6 +15,10 @@ const links = [
     label: 'Database',
     url: '/database',
   },
+  {
+    label: 'Report',
+    url: '/reports',
+  },
 ]
 
 export const Sidebar = ({ open }: IProps) => {
