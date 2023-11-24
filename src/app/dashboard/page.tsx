@@ -76,8 +76,7 @@ const Item: React.FC<ItemProps> = ({ onDelete, onRequestClose, isOpen }) => {
         legend: {
           show: true,
         },
-        colors: 
-                [ '#0033cc',
+        colors: [ '#0033cc',
                   '#4d79ff',
                   '#b3c6ff',
                   '#999999',
@@ -110,14 +109,24 @@ const Item: React.FC<ItemProps> = ({ onDelete, onRequestClose, isOpen }) => {
         colors: [ '#0033cc',
                   '#33cc33',
                   '#8c1aff',
+                  
+                  
+
                   '#999999',
+
+                  
                   '#85e085',
                   '#4d79ff',
                   '#d6f5d6',
+
                   '#cccccc',
+                  
+                  
                   '#b366ff',
+                  
                   '#b3c6ff',
                   '#e6ccff',
+
                   '#f2f2f2',],
       },
       series: yFields.map((field, idx) => {
