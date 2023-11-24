@@ -26,9 +26,7 @@ export const Navbar = ({ setSidebarOpen }: IProps) => {
         </div>
         <div className="ml-4">Alchimetis</div>
       </div>
-      <div>
-        <Link href="/sign-in">Sign In</Link>
-      </div>
+      <div>{/* <Link href="/sign-in">Sign In</Link> */}</div>
     </header>
   )
 }
