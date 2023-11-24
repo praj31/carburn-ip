@@ -7,4 +7,9 @@
   padding: 0;
   box-sizing: border-box;
   scroll-behavior: smooth;
+  outline: none;
+}
+
+.grid-stack-item-content {
+  @apply border border-gray-300 rounded-md p-2;
 }

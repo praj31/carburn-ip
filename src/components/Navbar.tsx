@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Dispatch, SetStateAction } from 'react'
 
 interface IProps {
@@ -6,7 +7,7 @@ interface IProps {
 
 export const Navbar = ({ setSidebarOpen }: IProps) => {
   return (
-    <header className="w-full h-[54px] flex justify-between items-center border-b border-solid border-gray-200 px-4 py-2">
+    <header className="sticky w-full h-[54px] flex justify-between items-center bg-white border-b border-solid border-gray-200 px-4 py-2 top-0 left-0 z-10">
       <div className="flex items-center">
         <div
           className="cursor-pointer"
@@ -25,7 +26,9 @@ export const Navbar = ({ setSidebarOpen }: IProps) => {
         </div>
         <div className="ml-4">Alchimetis</div>
       </div>
-      <div>Settings</div>
+      <div>
+        <Link href="/sign-in">Sign In</Link>
+      </div>
     </header>
   )
 }
