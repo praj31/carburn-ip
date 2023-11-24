@@ -1,24 +1,22 @@
 'use client'
-import React, { useState, useEffect } from "react";
-import ReactApexChart from "react-apexcharts";
-import Papa from "papaparse";
-import { ApexOptions } from "apexcharts";
+import React, { useState, useEffect } from 'react'
+import ReactApexChart from 'react-apexcharts'
+import Papa from 'papaparse'
+import { ApexOptions } from 'apexcharts'
 
-interface IGraphProps { }
+interface IGraphProps {}
 
 interface ICsvData {
-  Locations: string;
-  'CO2e_(t)': string;
+  Locations: string
+  CO2et: string
 }
 
 interface IChartState {
-  options: ApexOptions;
-  series: number[];
-
+  options: ApexOptions
+  series: number[]
 }
 
 export const PieChart: React.FC<IGraphProps> = () => {
-
   const chartOptions: ApexOptions = {
     // Define your chart options here
     chart: {
@@ -43,20 +41,23 @@ export const PieChart: React.FC<IGraphProps> = () => {
       '#FF9800',
       '#795548',
       '#607D8B',
-      '#F44336',]
-  };
+      '#F44336',
+    ],
+  }
   const [pieState, setPieState] = useState<IChartState>({
     series: [],
     options: chartOptions,
-  });
+  })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch('./Activity_by_location.csv')
       .then((response) => response.text())
-      .then((csv) => {
-        const parsedData = Papa.parse<ICsvData>(csv, { header: true });
-        const locations = parsedData.data.map((item) => item.Locations);
-        const co2eData = parsedData.data.map((item) => parseFloat(item['CO2e_(t)']));
+      .then((csv: any) => {
+        const parsedData = Papa.parse<ICsvData>(csv, { header: true })
+        const locations = parsedData.data.map((item) => item.Locations)
+        let co2eData = parsedData.data.map((item) => parseFloat(item['CO2et']))
+        co2eData = co2eData.slice(0, -1)
         setPieState((prevState) => ({
           ...prevState,
           series: co2eData,
@@ -64,22 +65,22 @@ export const PieChart: React.FC<IGraphProps> = () => {
             ...prevState.options,
             labels: locations,
           },
-        }));
+        }))
+        setLoading(false)
       })
       .catch((error) => {
-        console.error('Error fetching or parsing CSV data for the pie chart:', error);
-      });
-  }, []);
+        console.error('Error fetching or parsing CSV data for the pie chart:', error)
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div>
-      <ReactApexChart
-        height={350}
-        options={pieState.options}
-        series={pieState.series}
-        type="pie"
-      />
+      <ReactApexChart type="pie" height={350} options={pieState.options} series={pieState.series} />
     </div>
-  );
-};
-
+  )
+}
