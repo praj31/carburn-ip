@@ -1,21 +1,26 @@
 'use client'
-import type { Metadata } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navbar, Sidebar } from '@/components'
 import cx from 'classnames'
 import './globals.css'
-
-export const metadata: Metadata = {
-  title: 'Page Title',
-  description: 'Page Description',
-}
-
+import useFileStore from '@/app/_store/fileStore'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { useRouter } from 'next/navigation'
 interface IProps {
   children: React.ReactNode
 }
 
+library.add(fas)
+
 export default function RootLayout({ children }: IProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const { fetchFiles } = useFileStore()
+
+  useEffect(() => {
+    fetchFiles()
+  }, [])
 
   return (
     <html lang="en">
