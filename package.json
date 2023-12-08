@@ -18,6 +18,7 @@
     "axios": "^1.6.1",
     "classnames": "^2.3.2",
     "gridstack": "^9.5.0",
+    "jspdf": "^2.5.1",
     "next": "latest",
     "papaparse": "^5.4.1",
     "react": "latest",
